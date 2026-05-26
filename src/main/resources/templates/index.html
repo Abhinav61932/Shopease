@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopease</title>
+
+    <style>
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #141e30, #243b55);
+            min-height: 100vh;
+            padding: 40px;
+            color: white;
+        }
+
+        .container{
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1{
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 42px;
+            letter-spacing: 2px;
+        }
+
+        form{
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        .form-grid{
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+            gap: 20px;
+        }
+
+        input{
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        button{
+            margin-top: 25px;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(to right, #0072ff, #00c6ff);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover{
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,198,255,0.4);
+        }
+
+        .table-container{
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th{
+            background: rgba(255,255,255,0.15);
+            padding: 18px;
+            font-size: 18px;
+        }
+
+        td{
+            padding: 16px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        tr:hover{
+            background: rgba(255,255,255,0.08);
+            transition: 0.3s;
+        }
+
+        .price{
+            color: #00ff9d;
+            font-weight: bold;
+        }
+
+        .stock{
+            color: #ffd369;
+            font-weight: bold;
+        }
+
+        @media(max-width:768px){
+
+            h1{
+                font-size: 30px;
+            }
+
+            table{
+                font-size: 14px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🛒 Shopease Product Management</h1>
+
+    <form id="productForm">
+
+        <div class="form-grid">
+
+            <input type="text" id="name" placeholder="Product Name" required>
+
+            <input type="text" id="description" placeholder="Description" required>
+
+            <input type="number" id="price" placeholder="Price" required>
+
+            <input type="number" id="stockQuantity" placeholder="Stock Quantity" required>
+
+            <input type="text" id="imageUrl" placeholder="Image URL">
+
+        </div>
+
+        <button type="submit">Add Product</button>
+
+    </form>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+
+            <tbody id="productTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+async function loadProducts() {
+
+    const response = await fetch('/api/products');
+
+    const products = await response.json();
+
+    const table = document.getElementById('productTable');
+
+    table.innerHTML = '';
+
+    products.forEach(product => {
+
+        table.innerHTML += `
+            <tr>
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>${product.description}</td>
+                <td class="price">₹${product.price}</td>
+                <td class="stock">${product.stockQuantity}</td>
+            </tr>
+        `;
+    });
+}
+
+document.getElementById('productForm')
+.addEventListener('submit', async function(e){
+
+    e.preventDefault();
+
+    const product = {
+
+        name: document.getElementById('name').value,
+        description: document.getElementById('description').value,
+        price: document.getElementById('price').value,
+        stockQuantity: document.getElementById('stockQuantity').value,
+        imageUrl: document.getElementById('imageUrl').value
+    };
+
+    await fetch('/api/products', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify(product)
+    });
+
+    loadProducts();
+
+    document.getElementById('productForm').reset();
+});
+
+loadProducts();
+
+</script>
+
+</body>
+</html>
