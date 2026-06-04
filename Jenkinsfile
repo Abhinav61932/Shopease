@@ -36,7 +36,7 @@ pipeline {
 
         stage('Push Image') {
             steps {
-                bat 'docker push abhinav123/myapp'
+                bat 'docker push abhinav654/myapp'
             }
         }
     }
