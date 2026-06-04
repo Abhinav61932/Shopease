@@ -1,21 +1,18 @@
 pipeline {
-
     agent any
-
-    environment {
-        IMAGE_NAME = "abhinav123/myapp"
-    }
 
     stages {
 
-        stage('Build Docker Image') {
-
+        stage('Build Maven') {
             steps {
-
-                bat 'docker build -t %IMAGE_NAME% .'
-
+                bat 'mvn clean package'
             }
+        }
 
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t abhinav123/myapp .'
+            }
         }
 
         stage('Docker Login') {
@@ -36,16 +33,11 @@ pipeline {
             }
         }
 
+
         stage('Push Image') {
-
             steps {
-
-                bat 'docker push %IMAGE_NAME%'
-
+                bat 'docker push abhinav123/myapp'
             }
-
         }
-
     }
-
 }
